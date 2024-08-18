@@ -1,5 +1,5 @@
 
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.llms import Ollama 
 from langchain_community.vectorstores import FAISS
@@ -97,9 +97,37 @@ def encode_pdf(path, chunk_size =1000, chunk_overlap = 200):
 
 
 
+def retrieve_context_per_question(question, chunk_query_retriever):
+    try:
+        """
+        Retrivers relevant context and unique URLs from given question using the chunk query retriever.
+        
+        Args:
+            question : the question for which to retrieve contex and URLs.
+        
+        returns:
+            A tuple containing:
+            - string with the concatenated content of relevent documents.
+            - list of unique URLs from metadata of the relevant documents.
+        """
+        
+        docs = chunk_query_retriever.get_relevant_documents(question)
+
+        context = [doc.page_content for doc in docs]
+
+        return context
+    
+    except Exception as e:
+        print(f'error is coming from given retrieve context per question :: {e}')
 
 
-
-
-
+def show_context(context):
+    try:
+        
+        for i, c in enumerate(context):
+            print(f"Context {i+1}:")
+            print(c)
+            print("\n")
+    except Exception as e:
+        print(f'error is raised from show contexc function :: {e}')
 
