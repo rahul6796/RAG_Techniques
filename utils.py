@@ -131,3 +131,58 @@ def show_context(context):
     except Exception as e:
         print(f'error is raised from show contexc function :: {e}')
 
+
+
+def create_question_answer_from_context_chain(llm):
+    try:
+        
+
+
+        question_answer_context_llm = llm
+
+        question_answer_prompt_template = """
+
+        For the question below, provide a concise but suffice answer based only on the provided 
+        context:{context}
+        Question:{question}
+
+        """
+        question_answer_from_context_prompt= PromptTemplate(
+            template=question_answer_prompt_template,
+            input_variables=["context", 'question']
+        )
+
+        # create a chain by combining the prompt template and the llm model
+        question_answer_from_context_chain = question_answer_from_context_prompt | question_answer_context_llm
+        return question_answer_from_context_chain
+    
+    except Exception as e:
+        print(f'error is raised from create question answer from context chain :: {e}')
+
+
+def answer_question_from_context(question, context, question_answer_from_context_chain):
+    
+    try:
+        """
+        Answer a question using the given context by invoking a chain reasoning.
+        
+        Args:
+            question (str): the question to be answered.
+            context (str): the context to be used for answering the question.
+        return:
+            a dictionary the answer, context and question.
+        """
+        input_data = {
+            'question': question,
+            'context': context
+        }
+        output = question_answer_from_context_chain.invoke(input_data)
+        answer = output.answer_based_on_content
+        return {
+            'answer': answer,
+            'context': context,
+            'question': question
+        }
+    
+    except Exception as e:
+        print(f'error is coming from answer question from context :: {e}')
