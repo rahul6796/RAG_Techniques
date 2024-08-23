@@ -11,7 +11,9 @@ from typing import List
 import numpy as np
 import random
 import textwrap
+import fitz
 
+from langchain.docstore.document import Document
 
 
 def replace_t_with_space(list_of_documents):
@@ -186,3 +188,46 @@ def answer_question_from_context(question, context, question_answer_from_context
     
     except Exception as e:
         print(f'error is coming from answer question from context :: {e}')
+
+
+def read_pdf_to_string(path):
+    try:
+        """
+        Read the pdf document from the specified path and return its content as a string.
+        
+        Args:
+            path: file path
+        
+        Return:
+            str: the concatenated text content fo all pages in the pdf documents.
+        """
+        doc = fitz.open(path)
+
+        content = ""
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            content += page.get_text()
+        return content
+
+    except Exception as e:
+        print(f'error is raised from read pdf to string :: {e}')
+
+
+def split_text_into_chunks_with_indices(text: str, chunk_size: int, chunk_overlap: int):
+    try:
+        
+        chunks = []
+        start = 0
+
+        while start < len(text):
+            end = start + chunk_size
+            chunk = text[start:end]
+            chunks.append(Document(page_content=chunk,
+                                   metadata = {'index': len(chunk)}))
+            start += chunk_size - chunk_overlap
+
+        return chunks
+
+
+    except Exception as e:
+        print(f'error is raised from split text into chunks with indices :: {e}')
