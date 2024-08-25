@@ -223,7 +223,7 @@ def split_text_into_chunks_with_indices(text: str, chunk_size: int, chunk_overla
             end = start + chunk_size
             chunk = text[start:end]
             chunks.append(Document(page_content=chunk,
-                                   metadata = {'index': len(chunk)}))
+                                   metadata = {'index': len(chunks)}))
             start += chunk_size - chunk_overlap
 
         return chunks
@@ -231,3 +231,27 @@ def split_text_into_chunks_with_indices(text: str, chunk_size: int, chunk_overla
 
     except Exception as e:
         print(f'error is raised from split text into chunks with indices :: {e}')
+
+
+
+def get_chunk_by_index(vectorstore, target_index:int) -> Document:
+    try:
+        """
+        Retreive a chunk from the vectorstore based on its index in the metadata.
+
+        Args:
+            vectorstore: the vectorstore containing the chunks.
+            target_index: the index of the chunk to be retrieved.
+        
+        Return:
+            Document: the retreived chunk as a document object. or none.
+        """
+
+        all_docs = vectorstore.similarity_search("",
+                                                 k = vectorstore.index.ntotal)
+        for doc in all_docs:
+            if doc.metadata.get('index') == target_index:
+                return doc
+        
+    except Exception as e:
+        print(f'error raised from get chunk by index function :: {e}')
